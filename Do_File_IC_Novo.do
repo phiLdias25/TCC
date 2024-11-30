@@ -40,7 +40,7 @@ sort cod_condado
 sort causa_morte
 sort ano
 
-** Criando a dummy para os casos relevantes do CID-9 e as dummies de mortes tanto por intervenção legal quanto por homicídos, separadas por raça
+** Criando a dummy para os casos relevantes do CID-9 e as dummies de mortes por causas externas, intervenção legal e homicídos, separadas por raça
 gen dummy_raca = (racar3 == 3)
 
 	** População Negra
@@ -49,6 +49,9 @@ tab dummy_morte_int_leg_negro
 
 gen dummy_morte_homi_negro = (causa_morte >= 960 & causa_morte <= 969) & dummy_raca == 1
 tab dummy_morte_homi_negro
+
+gen dummy_morte_causa_ext_negro = (causa_morte >= 800 & causa_morte <= 999) & dummy_raca == 1
+tab dummy_morte_causa_ext_negro
 	
 	**População Branca
 gen dummy_morte_int_leg_branco = (causa_morte >= 970 & causa_morte <= 978) & dummy_raca == 0
@@ -56,6 +59,9 @@ tab dummy_morte_int_leg_branco
 
 gen dummy_morte_homi_branco = (causa_morte >= 960 & causa_morte <= 969) & dummy_raca == 0
 tab dummy_morte_homi_branco
+
+gen dummy_morte_causa_ext_branco = (causa_morte >= 800 & causa_morte <= 999) & dummy_raca == 0
+tab dummy_morte_causa_ext_branco
 
 ** Estatística Descritiva de Raças
 
@@ -67,6 +73,10 @@ label define ano_label 86 "1986" 87 "1987" 88 "1988"
 label values ano ano_label
 tabulate raca ano
 
+** Estatística Descritiva de Mortes por Causas Externas do CID-9
+tab causa_morte ano if causa_morte >= 800 & causa_morte <= 999
+tab causa_morte racar3 if causa_morte >= 800 & causa_morte <= 999
+
 ** Estatística Descritiva de Mortes por Intervenção Legal do CID-9
 tab causa_morte ano if causa_morte >= 970 & causa_morte <= 978
 tab causa_morte racar3 if causa_morte >= 970 & causa_morte <= 978
@@ -74,6 +84,7 @@ tab causa_morte racar3 if causa_morte >= 970 & causa_morte <= 978
 ** Estatística Descritiva de Mortes por Homicídio do CID-9
 tab causa_morte ano if causa_morte >= 960 & causa_morte <= 969
 tab causa_morte racar3 if causa_morte >= 960 & causa_morte <= 969
+
 
 ** Criando a coluna de semana
 tostring ano, replace force
@@ -289,6 +300,76 @@ replace populacao_total = 1094 if cod_condado == 48393 & ano == "1988"
 drop _merge_inicial _merge
 save Morte_homi_branco.dta, replace
 
+** Agora, para mortes por causas externas
+
+*Abrindo a base intermediária de novo
+use Mortes_Completa_CORRIGIDA_Stata.dta, clear
+
+	** População Negra
+collapse (sum) dummy_morte_causa_ext_negro um, by(ano week cod_condado)
+rename dummy_morte_causa_ext_negro morte_causa_ext_negro
+save Morte_causa_ext_negro.dta, replace
+
+use Morte_causa_ext_negro.dta, clear
+merge 1:1 ano week cod_condado using "C:\Users\phili\Documents\Importante\Iniciação_Científica\Dados\Bases de semana\Mortes_anual_completa.dta"
+drop if _merge == 1
+replace morte_causa_ext_negro = 0 if _merge == 2
+replace um = 0 if _merge == 2
+rename um um_causa_ext_negro
+rename _merge _merge_inicial
+merge m:m ano cod_condado using Base_populacao_completa
+* Base de população não possui informação dos condados 30037, 31005, 31009, 38007, 46021 e 48269 para o ano de 1986, dos condados 31085, 31115 e 51685 para o ano de 1987 e dos condados 8111, 31183, 48301 e 48393 para o ano de 1988.
+* Para corrigir isso, fazer uma interpolação com base na média entre as populações de cada condado dos outros anos da base
+replace populacao_total = 997 if cod_condado == 30037 & ano == "1986"
+replace populacao_total = 453 if cod_condado == 31005 & ano == "1986"
+replace populacao_total = 705 if cod_condado == 31009 & ano == "1986"
+replace populacao_total = 1178 if cod_condado == 38007 & ano == "1986"
+replace populacao_total = 2060 if cod_condado == 46021 & ano == "1986"
+replace populacao_total = 378 if cod_condado == 48269 & ano == "1986"
+replace populacao_total = 1248 if cod_condado == 31085 & ano == "1987"
+replace populacao_total = 732 if cod_condado == 31115 & ano == "1987"
+replace populacao_total = 6738 if cod_condado == 51685 & ano == "1987"
+replace populacao_total = 825 if cod_condado == 8111 & ano == "1988"
+replace populacao_total = 951 if cod_condado == 31183 & ano == "1988"
+replace populacao_total = 95 if cod_condado == 48301 & ano == "1988"
+replace populacao_total = 1094 if cod_condado == 48393 & ano == "1988"
+drop _merge_inicial _merge
+save Morte_causa_ext_negro.dta, replace
+
+*Abrindo a base intermediária
+use Mortes_Completa_CORRIGIDA_Stata.dta, clear
+
+	** População Branca
+collapse (sum) dummy_morte_causa_ext_branco um, by(ano week cod_condado)
+rename dummy_morte_causa_ext_branco morte_causa_ext_branco
+save Morte_causa_ext_branco.dta, replace
+
+use Morte_causa_ext_branco.dta, clear
+merge 1:1 ano week cod_condado using "C:\Users\phili\Documents\Importante\Iniciação_Científica\Dados\Bases de semana\Mortes_anual_completa.dta"
+drop if _merge == 1
+replace morte_causa_ext_branco = 0 if _merge == 2
+replace um = 0 if _merge == 2
+rename um um_causa_ext_branco
+rename _merge _merge_inicial
+merge m:m ano cod_condado using Base_populacao_completa
+* Base de população não possui informação dos condados 30037, 31005, 31009, 38007, 46021 e 48269 para o ano de 1986, dos condados 31085, 31115 e 51685 para o ano de 1987 e dos condados 8111, 31183, 48301 e 48393 para o ano de 1988.
+* Para corrigir isso, fazer uma interpolação com base na média entre as populações de cada condado dos outros anos da base
+replace populacao_total = 997 if cod_condado == 30037 & ano == "1986"
+replace populacao_total = 453 if cod_condado == 31005 & ano == "1986"
+replace populacao_total = 705 if cod_condado == 31009 & ano == "1986"
+replace populacao_total = 1178 if cod_condado == 38007 & ano == "1986"
+replace populacao_total = 2060 if cod_condado == 46021 & ano == "1986"
+replace populacao_total = 378 if cod_condado == 48269 & ano == "1986"
+replace populacao_total = 1248 if cod_condado == 31085 & ano == "1987"
+replace populacao_total = 732 if cod_condado == 31115 & ano == "1987"
+replace populacao_total = 6738 if cod_condado == 51685 & ano == "1987"
+replace populacao_total = 825 if cod_condado == 8111 & ano == "1988"
+replace populacao_total = 951 if cod_condado == 31183 & ano == "1988"
+replace populacao_total = 95 if cod_condado == 48301 & ano == "1988"
+replace populacao_total = 1094 if cod_condado == 48393 & ano == "1988"
+drop _merge_inicial _merge
+save Morte_causa_ext_branco.dta, replace
+
 ** Juntar as bases já criadas de mortes, separadas por raça e por blocos de código do CID-9
 
 use Morte_int_leg_negro.dta, clear
@@ -299,12 +380,16 @@ merge m:1 ano week cod_condado using Morte_homi_negro.dta
 rename _merge _merge_3
 merge m:1 ano week cod_condado using Morte_homi_branco.dta
 rename _merge _merge_4
+merge m:1 ano week cod_condado using Morte_causa_ext_negro.dta
+rename _merge _merge_5
+merge m:1 ano week cod_condado using Morte_causa_ext_branco.dta
+rename _merge _merge_6
 
-drop um_int_leg_branco um_homi_negro um_homi_branco
-drop _merge_2 _merge_3 _merge_4
+drop um_int_leg_branco um_homi_negro um_homi_branco um_causa_ext_negro um_causa_ext_branco
+drop _merge_2 _merge_3 _merge_4 _merge_5 _merge_6
 rename um_int_leg_negro obitos_totais
 
-order ano cod_condado week morte_int_leg_negro morte_int_leg_branco morte_homi_negro morte_homi_branco populacao_total obitos_totais
+order ano cod_condado week morte_int_leg_negro morte_int_leg_branco morte_homi_negro morte_homi_branco morte_causa_ext_negro morte_causa_ext_negro populacao_total obitos_totais
 
 save Base_mortes_completa_wide.dta, replace
 
@@ -315,8 +400,10 @@ rename morte_int_leg_negro morte_int_leg_1
 rename morte_int_leg_branco morte_int_leg_0
 rename morte_homi_negro morte_homi_1
 rename morte_homi_branco morte_homi_0
+rename morte_causa_ext_negro morte_causa_ext_1
+rename morte_causa_ext_branco morte_causa_ext_0
 
-reshape long morte_int_leg_ morte_homi_, i(ano cod_condado week) j(negro)
+reshape long morte_int_leg_ morte_homi_ morte_causa_ext_, i(ano cod_condado week) j(negro)
 
 save Base_completa_long.dta, replace
 
@@ -368,7 +455,47 @@ twoway line obitos_totais week if week >= 22 & week <= 43 & ano == 1988, lcolor(
 
 
 *Gráfico que separa os anos
-twoway (line obitos_totais week if ano==1986, lpattern(solid) lcolor(red) lwidth(medium)) (line obitos_totais week if ano==1987, lpattern(dash) lcolor(black) lwidth(medium)) (line obitos_totais week if ano==1988, lpattern(dot) lcolor(black) lwidth(thick)), xlabel(0(2)52) ylabel(30000(5000)55000) legend(order(1 "1986" 2 "1987" 3 "1988")) xtitle("Semana do ano") ytitle("Número de óbitos") xlabel(, nogrid) xline(32, lcolor(red) lpattern(dot) lwidth(thick)) xline(32, lcolor(red) lpattern(dot) lwidth(thick))
+twoway (line obitos_totais week if ano==1986, lpattern(solid) lcolor(red) lwidth(medium)) (line obitos_totais week if ano==1987, lpattern(dash) lcolor(black) lwidth(medium)) (line obitos_totais week if ano==1988, lpattern(dot) lcolor(black) lwidth(thick)), xlabel(0(2)52) legend(order(1 "1986" 2 "1987" 3 "1988")) xtitle("Semana do ano") ytitle("Número de óbitos") xlabel(, nogrid) xline(32, lcolor(red) lpattern(dot) lwidth(thick)) xline(32, lcolor(red) lpattern(dot) lwidth(thick))
+
+* Óbitos por Causas Externas
+
+use Base_completa_long.dta, clear
+
+collapse (sum) morte_causa_ext_, by(week_cont ano week)
+
+*Gráfico sequencial - Sem separação de raças
+
+	* Período completo
+twoway (line morte_causa_ext_ week_cont if week_cont <= 52, lwidth(medium) lcolor(black)) (line morte_causa_ext_ week_cont if week_cont > 52 & week_cont <= 105, lwidth(medium) lcolor(red) lpattern(solid)) (line morte_causa_ext_ week_cont if week_cont > 105, lwidth(medium) lcolor(gray) lpattern(solid)), xtitle("Semanas") ytitle("Número de Óbitos") legend(order(1 "1986" 2 "1987" 3 "1988")) xlabel(, nogrid) xline(53, lcolor(black) lwidth(medium) lpattern(dash)) xline(105, lcolor(black) lwidth(medium) lpattern(dash)) xline(136, lcolor(red) lpattern(dot) lwidth(thick)) 
+
+	* 10 semanas antes do lançamento - 10 semanas depois
+twoway line morte_causa_ext_ week if week >= 22 & week <= 43 & ano == 1988, lcolor(black) lpattern(solid) lwidth(thin) xlabel(22(2)44) xlabel(, nogrid) xline(32, lcolor(red) lpattern(dot) lwidth(thick)) xtitle("Semana do ano") ytitle("Número de óbitos")
+
+*Gráfico que separa os anos - Sem separação de raças
+twoway (line morte_causa_ext_ week if ano==1986, lpattern(solid) lcolor(red) lwidth(medium)) (line morte_causa_ext_ week if ano==1987, lpattern(dash) lcolor(black) lwidth(medium)) (line morte_causa_ext_ week if ano==1988, lpattern(dot) lcolor(black) lwidth(thick)), xlabel(0(2)52) legend(order(1 "1986" 2 "1987" 3 "1988")) xtitle("Semana do ano") ytitle("Número de óbitos") xlabel(, nogrid) xline(32, lcolor(red) lpattern(dot) lwidth(thick))
+
+*Gráfico sequencial - Com separação de raças
+use Base_completa_long.dta, clear
+
+collapse (sum) morte_causa_ext_, by(week_cont ano week negro)
+
+	* Período Completo - Negros
+twoway (line morte_causa_ext_ week_cont if week_cont <= 52 & negro == 1, lwidth(medium) lcolor(black)) (line morte_causa_ext_ week_cont if week_cont > 52 & week_cont <= 105 & negro == 1, lwidth(medium) lcolor(red) lpattern(solid)) (line morte_causa_ext_ week_cont if week_cont > 105 & negro == 1, lwidth(medium) lcolor(gray) lpattern(solid)), xtitle("Semanas") ytitle("Número de Óbitos") legend(order(1 "1986" 2 "1987" 3 "1988")) xlabel(, nogrid) xline(53, lcolor(black) lwidth(medium) lpattern(dash)) xline(105, lcolor(black) lwidth(medium) lpattern(dash)) xline(136, lcolor(red) lpattern(dot) lwidth(thick))
+
+	* Período Completo - Não negros
+twoway (line morte_causa_ext_ week_cont if week_cont <= 52 & negro == 0, lwidth(medium) lcolor(black)) (line morte_causa_ext_ week_cont if week_cont > 52 & week_cont <= 105 & negro == 0, lwidth(medium) lcolor(red) lpattern(solid)) (line morte_causa_ext_ week_cont if week_cont > 105 & negro == 0, lwidth(medium) lcolor(gray) lpattern(solid)), xtitle("Semanas") ytitle("Número de Óbitos") legend(order(1 "1986" 2 "1987" 3 "1988")) xlabel(, nogrid) xline(53, lcolor(black) lwidth(medium) lpattern(dash)) xline(105, lcolor(black) lwidth(medium) lpattern(dash)) xline(136, lcolor(red) lpattern(dot) lwidth(thick))
+
+	* 10 semanas antes do lançamento - 5 semanas depois - Com separação de raças
+		* Negros
+twoway line morte_causa_ext_ week if week >= 22 & week <= 38 & ano == 1988 & negro == 1, lcolor(black) lpattern(solid) lwidth(thin) xlabel(22(2)40) xlabel(, nogrid) xline(32, lcolor(red) lpattern(dot) lwidth(thick)) xtitle("Semana do ano") ytitle("Número de óbitos")
+		* Não Negros
+twoway line morte_causa_ext_ week if week >= 22 & week <= 38 & ano == 1988 & negro == 0, lcolor(black) lpattern(solid) lwidth(thin) xlabel(22(2)40) xlabel(, nogrid) xline(32, lcolor(red) lpattern(dot) lwidth(thick)) xtitle("Semana do ano") ytitle("Número de óbitos")
+
+*Gráfico que separa os anos - Com separação de raças
+	* Negros
+twoway (line morte_causa_ext_ week if ano==1986 & negro == 1, lpattern(solid) lcolor(red) lwidth(medium)) (line morte_causa_ext_ week if ano==1987 & negro == 1, lpattern(dash) lcolor(black) lwidth(medium)) (line morte_causa_ext_ week if ano==1988 & negro == 1, lpattern(dot) lcolor(black) lwidth(thick)), xlabel(0(2)52) legend(order(1 "1986" 2 "1987" 3 "1988")) xtitle("Semana do ano") ytitle("Número de óbitos") xlabel(, nogrid) xline(32, lcolor(red) lpattern(dot) lwidth(thick))
+	* Não negros
+twoway (line morte_causa_ext_ week if ano==1986 & negro == 0, lpattern(solid) lcolor(red) lwidth(medium)) (line morte_causa_ext_ week if ano==1987 & negro == 0, lpattern(dash) lcolor(black) lwidth(medium)) (line morte_causa_ext_ week if ano==1988 & negro == 0, lpattern(dot) lcolor(black) lwidth(thick)), xlabel(0(2)52) legend(order(1 "1986" 2 "1987" 3 "1988")) xtitle("Semana do ano") ytitle("Número de óbitos") xlabel(, nogrid) xline(32, lcolor(red) lpattern(dot) lwidth(thick))
 
 * Óbitos por Intervenções Legais
 
@@ -459,20 +586,23 @@ use Base_completa_long.dta, clear
 gen morte_int_leg_pc = (morte_int_leg_ / populacao_total) * 100000
 gen morte_homi_pc = (morte_homi_ / populacao_total) * 100000
 gen obitos_totais_pc = (obitos_totais / populacao_total) * 100000
+gen morte_causa_ext_pc = (morte_causa_ext_ / populacao_total) * 100000
 
 gen tempoAteLanc2= tempoAteLanc*negro
 
 
 * Para mortes por Intervenção Legal
-eventdd morte_int_leg_pc ib1.negro i.week i.ano, timevar(tempoAteLanc2) method(hdfe, absorb(i.cod_condado) cluster(cod_condado)) leads(10) lags(5) inrange graph_op(ytitle("Mortes por 100 mil habitantes", size(small)) xtitle("Semanas com base no lançamento do álbum") xlabel(, nogrid)) ci(rcap, color(black)) coef_op(mcolor(red))
+eventdd morte_int_leg_pc ib1.negro i.week i.ano, timevar(tempoAteLanc2) method(hdfe, absorb(i.cod_condado) cluster(cod_condado)) leads(10) lags(5) inrange graph_op(ytitle("Mortes por 100 mil habitantes", size(small)) xtitle("Semanas com base no lançamento do álbum") xlabel(, nogrid) ylabel(-0.015(0.005)0.015)) ci(rcap, color(black)) coef_op(mcolor(red))
 
 
 * Para mortes por Homicídios
-eventdd morte_homi_pc ib1.negro i.week i.ano, timevar(tempoAteLanc2) method(hdfe, absorb(i.cod_condado) cluster(cod_condado)) leads(10) lags(5) inrange graph_op(ytitle("Mortes por 100 mil habitantes", size(small)) xtitle("Semanas com base no lançamento do álbum") xlabel(, nogrid)) ci(rcap, color(black)) coef_op(mcolor(red))
+eventdd morte_homi_pc ib1.negro i.week i.ano, timevar(tempoAteLanc2) method(hdfe, absorb(i.cod_condado) cluster(cod_condado)) leads(10) lags(5) inrange graph_op(ytitle("Mortes por 100 mil habitantes", size(small)) xtitle("Semanas com base no lançamento do álbum") xlabel(, nogrid) ylabel(-0.1(0.05)0.1)) ci(rcap, color(black)) coef_op(mcolor(red))
 
 * Para óbitos totais
 eventdd obitos_totais_pc ib1.negro i.week i.ano, timevar(tempoAteLanc2) method(hdfe, absorb(i.cod_condado) cluster(cod_condado)) leads(10) lags(5) inrange graph_op(ytitle("Mortes por 100 mil habitantes", size(small)) xtitle("Semanas com base no lançamento do álbum") xlabel(, nogrid)) ci(rcap, color(black)) coef_op(mcolor(red))
 
+* Para mortes por Causas Externas
+eventdd morte_causa_ext_pc ib1.negro i.week i.ano, timevar(tempoAteLanc2) method(hdfe, absorb(i.cod_condado) cluster(cod_condado)) leads(10) lags(5) inrange graph_op(ytitle("Mortes por 100 mil habitantes", size(small)) xtitle("Semanas com base no lançamento do álbum") xlabel(, nogrid) ylabel(-0.2(0.1)0.2)) ci(rcap, color(black)) coef_op(mcolor(red))
 
 ** Estimando o Pooled Diff-N-Diff
 
@@ -500,9 +630,15 @@ reghdfe obitos_totais_pc i.negro##i.post if week >= 22 & week <= 43, absorb(cod_
 
 estimates store dnd_obitos_totais
 
+* Para mortes por causas externas
+
+reghdfe morte_causa_ext_pc i.negro##i.post if week >= 22 & week <= 43, absorb(cod_condado week_cont ano) vce(cluster cod_condado)
+
+estimates store dnd_causas_ext
+
 * Criando tabela de estimação
 
-etable, estimates(dnd_obitos_totais dnd_int_reg dnd_homi) showstars showstarsnote export(resultados_dnd.xlsx, replace)
+etable, estimates(dnd_causas_ext dnd_int_reg dnd_homi) showstars showstarsnote export(resultados_dnd.xlsx, replace)
 
 
 save Base_completa_long.dta, replace
@@ -532,14 +668,17 @@ save Base_completa_long.dta, replace
 gen tempoAteLanc_single2= tempoAteLanc_single*negro
 
 * Para mortes por Intervenção Legal
-eventdd morte_int_leg_pc ib1.negro i.week i.ano, timevar(tempoAteLanc_single2) method(hdfe, absorb(i.cod_condado) cluster(cod_condado)) leads(10) lags(5) inrange graph_op(ytitle("Mortes por 100 mil habitantes", size(small)) xtitle("Semanas com base no lançamento do single") xlabel(, nogrid)) ci(rcap, color(black)) coef_op(mcolor(red))
+eventdd morte_int_leg_pc ib1.negro i.week i.ano, timevar(tempoAteLanc_single2) method(hdfe, absorb(i.cod_condado) cluster(cod_condado)) leads(10) lags(5) inrange graph_op(ytitle("Mortes por 100 mil habitantes", size(small)) xtitle("Semanas com base no lançamento do single") xlabel(, nogrid) ylabel(-0.015(0.0075)0.015)) ci(rcap, color(black)) coef_op(mcolor(red))
 
 
 * Para mortes por Homicídios
-eventdd morte_homi_pc ib1.negro i.week i.ano, timevar(tempoAteLanc_single2) method(hdfe, absorb(i.cod_condado) cluster(cod_condado)) leads(10) lags(5) inrange graph_op(ytitle("Mortes por 100 mil habitantes", size(small)) xtitle("Semanas com base no lançamento do single") xlabel(, nogrid)) ci(rcap, color(black)) coef_op(mcolor(red))
+eventdd morte_homi_pc ib1.negro i.week i.ano, timevar(tempoAteLanc_single2) method(hdfe, absorb(i.cod_condado) cluster(cod_condado)) leads(10) lags(5) inrange graph_op(ytitle("Mortes por 100 mil habitantes", size(small)) xtitle("Semanas com base no lançamento do single") xlabel(, nogrid) ylabel(-0.15(0.075)0.15)) ci(rcap, color(black)) coef_op(mcolor(red))
 
 * Para óbitos totais
 eventdd obitos_totais_pc ib1.negro i.week i.ano, timevar(tempoAteLanc_single2) method(hdfe, absorb(i.cod_condado) cluster(cod_condado)) leads(10) lags(5) inrange graph_op(ytitle("Mortes por 100 mil habitantes", size(small)) xtitle("Semanas com base no lançamento do single") xlabel(, nogrid)) ci(rcap, color(black)) coef_op(mcolor(red))
+
+* Para mortes por causas externas
+eventdd morte_causa_ext_pc ib1.negro i.week i.ano, timevar(tempoAteLanc_single2) method(hdfe, absorb(i.cod_condado) cluster(cod_condado)) leads(10) lags(5) inrange graph_op(ytitle("Mortes por 100 mil habitantes", size(small)) xtitle("Semanas com base no lançamento do single") xlabel(, nogrid) ylabel(-0.3(0.15)0.3)) ci(rcap, color(black)) coef_op(mcolor(red))
 
 ** Estimando o Pooled Diff-N-Diff
 
@@ -549,7 +688,7 @@ reghdfe morte_int_leg_pc i.negro##i.post_single if week >= 17 & week <= 38, abso
 estimates store dnd_int_reg_single
 
 
-* Para mortes por homicídio
+* Para mortes por Homicídio
 reghdfe morte_homi_pc i.negro##i.post_single if week >= 17 & week <= 38, absorb(cod_condado week_cont ano) vce(cluster cod_condado)
 
 estimates store dnd_homi_single
@@ -560,8 +699,13 @@ reghdfe obitos_totais_pc i.negro##i.post_single if week >= 17 & week <= 38, abso
 
 estimates store dnd_obitos_totais_single
 
+* Para mortes por causa externa
+reghdfe morte_causa_ext_pc i.negro##i.post_single if week >= 17 & week <= 38, absorb(cod_condado week_cont ano) vce(cluster cod_condado)
+
+estimates store dnd_causas_ext_single
+
 * Criando tabela de estimação
-etable, estimates(dnd_obitos_totais_single dnd_int_reg_single dnd_homi_single) showstars showstarsnote export(resultados_dnd_single.xlsx, replace)
+etable, estimates(dnd_causas_ext_single dnd_int_reg_single dnd_homi_single) showstars showstarsnote export(resultados_dnd_single.xlsx, replace)
 
 save Base_completa_long.dta, replace
 
@@ -592,6 +736,20 @@ collapse (sum) um, by(week ano)
 destring ano, replace
 
 twoway line um week if week >= 17 & week <= 31 & ano == 1988, lcolor(black) lpattern(solid) lwidth(thin) xlabel(16(2)32) xlabel(, nogrid) xline(27, lcolor(red) lpattern(dot) lwidth(thick)) xtitle("Semana do ano") ytitle("Número de óbitos")
+
+* Causas Externas
+
+use Base_completa_long.dta, clear
+
+collapse (sum) morte_causa_ext_, by(week_cont ano week negro)
+
+* 10 semanas antes do lançamento - 5 semanas depois - Com separação de raças
+		
+		* Negros
+twoway line morte_causa_ext_ week if week >= 17 & week <= 31 & ano == 1988 & negro == 1, lcolor(black) lpattern(solid) lwidth(thin) xlabel(16(2)32) xlabel(, nogrid) xline(27, lcolor(red) lpattern(dot) lwidth(thick)) xtitle("Semana do ano") ytitle("Número de óbitos")
+		
+		* Não Negros
+twoway line morte_causa_ext_ week if week >= 17 & week <= 31 & ano == 1988 & negro == 0, lcolor(black) lpattern(solid) lwidth(thin) xlabel(16(2)32) xlabel(, nogrid) xline(27, lcolor(red) lpattern(dot) lwidth(thick)) xtitle("Semana do ano") ytitle("Número de óbitos")
 
 * Intervenção Legal
 
@@ -644,14 +802,17 @@ save Base_completa_long.dta, replace
 gen tempoAteLanc_single2_2= tempoAteLanc_single_2*negro
 
 * Para mortes por Intervenção Legal
-eventdd morte_int_leg_pc ib1.negro i.week i.ano, timevar(tempoAteLanc_single2_2) method(hdfe, absorb(i.cod_condado) cluster(cod_condado)) leads(10) lags(5) inrange graph_op(ytitle("Mortes por 100 mil habitantes", size(small)) xtitle("Semanas com base no lançamento do single") xlabel(, nogrid)) ci(rcap, color(black)) coef_op(mcolor(red))
+eventdd morte_int_leg_pc ib1.negro i.week i.ano, timevar(tempoAteLanc_single2_2) method(hdfe, absorb(i.cod_condado) cluster(cod_condado)) leads(10) lags(5) inrange graph_op(ytitle("Mortes por 100 mil habitantes", size(small)) xtitle("Semanas com base no lançamento do single") xlabel(, nogrid) ylabel(-0.02(0.01)0.02)) ci(rcap, color(black)) coef_op(mcolor(red))
 
 
 * Para mortes por Homicídios
-eventdd morte_homi_pc ib1.negro i.week i.ano, timevar(tempoAteLanc_single2_2) method(hdfe, absorb(i.cod_condado) cluster(cod_condado)) leads(10) lags(5) inrange graph_op(ytitle("Mortes por 100 mil habitantes", size(small)) xtitle("Semanas com base no lançamento do single") xlabel(, nogrid)) ci(rcap, color(black)) coef_op(mcolor(red))
+eventdd morte_homi_pc ib1.negro i.week i.ano, timevar(tempoAteLanc_single2_2) method(hdfe, absorb(i.cod_condado) cluster(cod_condado)) leads(10) lags(5) inrange graph_op(ytitle("Mortes por 100 mil habitantes", size(small)) xtitle("Semanas com base no lançamento do single") xlabel(, nogrid) ylabel(-0.15(0.075)0.15)) ci(rcap, color(black)) coef_op(mcolor(red))
 
 * Para óbitos totais
 eventdd obitos_totais_pc ib1.negro i.week i.ano, timevar(tempoAteLanc_single2_2) method(hdfe, absorb(i.cod_condado) cluster(cod_condado)) leads(10) lags(5) inrange graph_op(ytitle("Mortes por 100 mil habitantes", size(small)) xtitle("Semanas com base no lançamento do single") xlabel(, nogrid)) ci(rcap, color(black)) coef_op(mcolor(red))
+
+* Para causas externas
+eventdd morte_causa_ext_pc ib1.negro i.week i.ano, timevar(tempoAteLanc_single2_2) method(hdfe, absorb(i.cod_condado) cluster(cod_condado)) leads(10) lags(5) inrange graph_op(ytitle("Mortes por 100 mil habitantes", size(small)) xtitle("Semanas com base no lançamento do single") xlabel(, nogrid) ylabel(-0.3(0.15)0.3)) ci(rcap, color(black)) coef_op(mcolor(red))
 
 ** Estimando o Pooled Diff-N-Diff
 
@@ -670,10 +831,13 @@ estimates store dnd_homi_single_2
 * Para óbitos totais
 reghdfe obitos_totais_pc i.negro##i.post_single_2 if week >= 26 & week <= 47, absorb(cod_condado week_cont ano) vce(cluster cod_condado)
 
-estimates store dnd_obitos_totais_single_2
+* Para causas externas
+reghdfe morte_causa_ext_pc i.negro##i.post_single_2 if week >= 26 & week <= 47, absorb(cod_condado week_cont ano) vce(cluster cod_condado)
+
+estimates store dnd_causa_ext_single_2
 
 * Criando tabela de estimação
-etable, estimates(dnd_obitos_totais_single_2 dnd_int_reg_single_2 dnd_homi_single_2) showstars showstarsnote export(resultados_dnd_single_2.xlsx, replace)
+etable, estimates(dnd_causa_ext_single_2 dnd_int_reg_single_2 dnd_homi_single_2) showstars showstarsnote export(resultados_dnd_single_2.xlsx, replace)
 
 save Base_completa_long.dta, replace
 
@@ -704,6 +868,20 @@ collapse (sum) um, by(week ano)
 destring ano, replace
 
 twoway line um week if week >= 26 & week <= 42 & ano == 1988, lcolor(black) lpattern(solid) lwidth(thin) xlabel(24(2)44) xlabel(, nogrid) xline(36, lcolor(red) lpattern(dot) lwidth(thick)) xtitle("Semana do ano") ytitle("Número de óbitos")
+
+* Causas Externas
+
+use Base_completa_long.dta, clear
+
+collapse (sum) morte_causa_ext_, by(week_cont ano week negro)
+
+* 10 semanas antes do lançamento - 5 semanas depois - Com separação de raças
+		
+		* Negros
+twoway line morte_causa_ext_ week if week >= 26 & week <= 42 & ano == 1988 & negro == 1, lcolor(black) lpattern(solid) lwidth(thin) xlabel(24(2)44) xlabel(, nogrid) xline(36, lcolor(red) lpattern(dot) lwidth(thick)) xtitle("Semana do ano") ytitle("Número de óbitos")
+		
+		* Não Negros
+twoway line morte_causa_ext_ week if week >= 26 & week <= 42 & ano == 1988 & negro == 0, lcolor(black) lpattern(solid) lwidth(thin) xlabel(24(2)44) xlabel(, nogrid) xline(36, lcolor(red) lpattern(dot) lwidth(thick)) xtitle("Semana do ano") ytitle("Número de óbitos")
 
 * Intervenção Legal
 
@@ -845,39 +1023,48 @@ save Base_completa_long_mediana, replace
 use Base_completa_long_mediana, clear
 
 * Para mortes por Intervenção Legal
-eventdd morte_int_leg_pc ib1.negro i.week i.ano, timevar(tempoAteLanc2) method(hdfe, absorb(i.cod_condado) cluster(cod_condado)) leads(10) lags(5) inrange graph_op(ytitle("Mortes por 100 mil habitantes", size(small)) xtitle("Semanas com base no lançamento do álbum") xlabel(, nogrid)) ci(rcap, color(black)) coef_op(mcolor(red))
+eventdd morte_int_leg_pc ib1.negro i.week i.ano, timevar(tempoAteLanc2) method(hdfe, absorb(i.cod_condado) cluster(cod_condado)) leads(10) lags(5) inrange graph_op(ytitle("Mortes por 100 mil habitantes", size(small)) xtitle("Semanas com base no lançamento do álbum") xlabel(, nogrid) ylabel(-0.03(0.015)0.03)) ci(rcap, color(black)) coef_op(mcolor(red))
 
 
 * Para mortes por Homicídios
-eventdd morte_homi_pc ib1.negro i.week i.ano, timevar(tempoAteLanc2) method(hdfe, absorb(i.cod_condado) cluster(cod_condado)) leads(10) lags(5) inrange graph_op(ytitle("Mortes por 100 mil habitantes", size(small)) xtitle("Semanas com base no lançamento do álbum") xlabel(, nogrid)) ci(rcap, color(black)) coef_op(mcolor(red))
+eventdd morte_homi_pc ib1.negro i.week i.ano, timevar(tempoAteLanc2) method(hdfe, absorb(i.cod_condado) cluster(cod_condado)) leads(10) lags(5) inrange graph_op(ytitle("Mortes por 100 mil habitantes", size(small)) xtitle("Semanas com base no lançamento do álbum") xlabel(, nogrid) ylabel(-0.2(0.1)0.2)) ci(rcap, color(black)) coef_op(mcolor(red))
 
 * Para óbitos totais
 eventdd obitos_totais_pc ib1.negro i.week i.ano, timevar(tempoAteLanc2) method(hdfe, absorb(i.cod_condado) cluster(cod_condado)) leads(10) lags(5) inrange graph_op(ytitle("Mortes por 100 mil habitantes", size(small)) xtitle("Semanas com base no lançamento do álbum") xlabel(, nogrid)) ci(rcap, color(black)) coef_op(mcolor(red))
+
+* Para causas externas
+eventdd morte_causa_ext_pc ib1.negro i.week i.ano, timevar(tempoAteLanc2) method(hdfe, absorb(i.cod_condado) cluster(cod_condado)) leads(10) lags(5) inrange graph_op(ytitle("Mortes por 100 mil habitantes", size(small)) xtitle("Semanas com base no lançamento do álbum") xlabel(, nogrid) ylabel(-0.3(0.15)0.3)) ci(rcap, color(black)) coef_op(mcolor(red))
 
 
 ** Event Study para o primeiro single
 
 * Para mortes por Intervenção Legal
-eventdd morte_int_leg_pc ib1.negro i.week i.ano, timevar(tempoAteLanc_single2) method(hdfe, absorb(i.cod_condado) cluster(cod_condado)) leads(10) lags(5) inrange graph_op(ytitle("Mortes por 100 mil habitantes", size(small)) xtitle("Semanas com base no lançamento do single") xlabel(, nogrid)) ci(rcap, color(black)) coef_op(mcolor(red))
+eventdd morte_int_leg_pc ib1.negro i.week i.ano, timevar(tempoAteLanc_single2) method(hdfe, absorb(i.cod_condado) cluster(cod_condado)) leads(10) lags(5) inrange graph_op(ytitle("Mortes por 100 mil habitantes", size(small)) xtitle("Semanas com base no lançamento do single") xlabel(, nogrid) ylabel(-0.02(0.01)0.02)) ci(rcap, color(black)) coef_op(mcolor(red))
 
 
 * Para mortes por Homicídios
-eventdd morte_homi_pc ib1.negro i.week i.ano, timevar(tempoAteLanc_single2) method(hdfe, absorb(i.cod_condado) cluster(cod_condado)) leads(10) lags(5) inrange graph_op(ytitle("Mortes por 100 mil habitantes", size(small)) xtitle("Semanas com base no lançamento do single") xlabel(, nogrid)) ci(rcap, color(black)) coef_op(mcolor(red))
+eventdd morte_homi_pc ib1.negro i.week i.ano, timevar(tempoAteLanc_single2) method(hdfe, absorb(i.cod_condado) cluster(cod_condado)) leads(10) lags(5) inrange graph_op(ytitle("Mortes por 100 mil habitantes", size(small)) xtitle("Semanas com base no lançamento do single") xlabel(, nogrid) ylabel(-0.2(0.1)0.2)) ci(rcap, color(black)) coef_op(mcolor(red))
 
 * Para óbitos totais
 eventdd obitos_totais_pc ib1.negro i.week i.ano, timevar(tempoAteLanc_single2) method(hdfe, absorb(i.cod_condado) cluster(cod_condado)) leads(10) lags(5) inrange graph_op(ytitle("Mortes por 100 mil habitantes", size(small)) xtitle("Semanas com base no lançamento do single") xlabel(, nogrid)) ci(rcap, color(black)) coef_op(mcolor(red))
 
+* Para Causas Externas
+eventdd morte_causa_ext_pc ib1.negro i.week i.ano, timevar(tempoAteLanc_single2) method(hdfe, absorb(i.cod_condado) cluster(cod_condado)) leads(10) lags(5) inrange graph_op(ytitle("Mortes por 100 mil habitantes", size(small)) xtitle("Semanas com base no lançamento do single") xlabel(, nogrid) ylabel(-0.3(0.15)0.3)) ci(rcap, color(black)) coef_op(mcolor(red))
+
 ** Event Study para o segundo single
 
 * Para mortes por Intervenção Legal
-eventdd morte_int_leg_pc ib1.negro i.week i.ano, timevar(tempoAteLanc_single2_2) method(hdfe, absorb(i.cod_condado) cluster(cod_condado)) leads(10) lags(5) inrange graph_op(ytitle("Mortes por 100 mil habitantes", size(small)) xtitle("Semanas com base no lançamento do single") xlabel(, nogrid)) ci(rcap, color(black)) coef_op(mcolor(red))
+eventdd morte_int_leg_pc ib1.negro i.week i.ano, timevar(tempoAteLanc_single2_2) method(hdfe, absorb(i.cod_condado) cluster(cod_condado)) leads(10) lags(5) inrange graph_op(ytitle("Mortes por 100 mil habitantes", size(small)) xtitle("Semanas com base no lançamento do single") xlabel(, nogrid) ylabel(-0.03(0.015)0.03)) ci(rcap, color(black)) coef_op(mcolor(red))
 
 
 * Para mortes por Homicídios
-eventdd morte_homi_pc ib1.negro i.week i.ano, timevar(tempoAteLanc_single2_2) method(hdfe, absorb(i.cod_condado) cluster(cod_condado)) leads(10) lags(5) inrange graph_op(ytitle("Mortes por 100 mil habitantes", size(small)) xtitle("Semanas com base no lançamento do single") xlabel(, nogrid)) ci(rcap, color(black)) coef_op(mcolor(red))
+eventdd morte_homi_pc ib1.negro i.week i.ano, timevar(tempoAteLanc_single2_2) method(hdfe, absorb(i.cod_condado) cluster(cod_condado)) leads(10) lags(5) inrange graph_op(ytitle("Mortes por 100 mil habitantes", size(small)) xtitle("Semanas com base no lançamento do single") xlabel(, nogrid) ylabel(-0.2(0.1)0.2)) ci(rcap, color(black)) coef_op(mcolor(red))
 
 * Para óbitos totais
 eventdd obitos_totais_pc ib1.negro i.week i.ano, timevar(tempoAteLanc_single2_2) method(hdfe, absorb(i.cod_condado) cluster(cod_condado)) leads(10) lags(5) inrange graph_op(ytitle("Mortes por 100 mil habitantes", size(small)) xtitle("Semanas com base no lançamento do single") xlabel(, nogrid)) ci(rcap, color(black)) coef_op(mcolor(red))
+
+* Para causas externas
+eventdd morte_causa_ext_ ib1.negro i.week i.ano, timevar(tempoAteLanc_single2_2) method(hdfe, absorb(i.cod_condado) cluster(cod_condado)) leads(10) lags(5) inrange graph_op(ytitle("Mortes por 100 mil habitantes", size(small)) xtitle("Semanas com base no lançamento do single") xlabel(, nogrid) ylabel(-0.2(0.1)0.2)) ci(rcap, color(black)) coef_op(mcolor(red))
 
 ** Número de condados: 3135
 ** Número de semanas: 52
