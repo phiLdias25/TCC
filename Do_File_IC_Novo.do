@@ -140,8 +140,8 @@ destring ano, replace
 
 twoway (line um week if ano == 1986 & racar3 == 3, lwidth(medium) lcolor(black)) (line um week if ano == 1987 & racar3 == 3, lwidth(medium) lcolor(red) lpattern(dash)) (line um week if ano == 1988 & racar3 == 3, lwidth(thick) lcolor(gray) lpattern(dot)), xtitle("Semanas") ytitle("Número de Óbitos") legend(order(1 "1986" 2 "1987" 3 "1988")) xlabel(, nogrid) xline(32, lcolor(red) lpattern(dot) lwidth(thick))
 
-* 10 semanas antes do lançamento - 10 semanas depois do lançamento do álbum
-twoway line um week if week >= 22 & week <= 38 & ano == 1988 & racar3 == 3, lcolor(black) lpattern(solid) lwidth(thin) xlabel(22(2)40) xlabel(, nogrid) xline(32, lcolor(red) lpattern(dot) lwidth(thick)) xtitle("Semana do ano") ytitle("Número de óbitos")
+* 10 semanas antes do lançamento - 5 semanas depois do lançamento do álbum
+twoway line um week if week >= 22 & week <= 37 & ano == 1988 & racar3 == 3, lcolor(black) lpattern(solid) lwidth(thin) xlabel(22(2)40) xlabel(, nogrid) xline(32, lcolor(red) lpattern(dot) lwidth(thick)) xtitle("Semana do ano") ytitle("Número de óbitos")
 
 * Não Negros
 
@@ -156,7 +156,7 @@ destring ano, replace
 twoway (line um week if ano == 1986, lwidth(medium) lcolor(black)) (line um week if ano == 1987, lwidth(medium) lcolor(red) lpattern(dash)) (line um week if ano == 1988, lwidth(thick) lcolor(gray) lpattern(dot)), xtitle("Semanas") ytitle("Número de Óbitos") legend(order(1 "1986" 2 "1987" 3 "1988")) xlabel(, nogrid) xline(32, lcolor(red) lpattern(dot) lwidth(thick))
 
 * 10 semanas antes do lançamento - 5 semanas depois do lançamento do álbum
-twoway line um week if week >= 22 & week <= 38 & ano == 1988, lcolor(black) lpattern(solid) lwidth(thin) xlabel(22(2)40) xlabel(, nogrid) xline(32, lcolor(red) lpattern(dot) lwidth(thick)) xtitle("Semana do ano") ytitle("Número de óbitos")
+twoway line um week if week >= 22 & week <= 37 & ano == 1988, lcolor(black) lpattern(solid) lwidth(thin) xlabel(22(2)40) xlabel(, nogrid) xline(32, lcolor(red) lpattern(dot) lwidth(thick)) xtitle("Semana do ano") ytitle("Número de óbitos")
 
 ** Colapsando as bases para a população morta por intervenções legais (separando entre negros e brancos)
 
@@ -487,9 +487,9 @@ twoway (line morte_causa_ext_ week_cont if week_cont <= 52 & negro == 0, lwidth(
 
 	* 10 semanas antes do lançamento - 5 semanas depois - Com separação de raças
 		* Negros
-twoway line morte_causa_ext_ week if week >= 22 & week <= 38 & ano == 1988 & negro == 1, lcolor(black) lpattern(solid) lwidth(thin) xlabel(22(2)40) xlabel(, nogrid) xline(32, lcolor(red) lpattern(dot) lwidth(thick)) xtitle("Semana do ano") ytitle("Número de óbitos")
+twoway line morte_causa_ext_ week if week >= 22 & week <= 37 & ano == 1988 & negro == 1, lcolor(black) lpattern(solid) lwidth(thin) xlabel(22(2)38) xlabel(, nogrid) xline(32, lcolor(red) lpattern(dot) lwidth(thick)) xtitle("Semana do ano") ytitle("Número de óbitos")
 		* Não Negros
-twoway line morte_causa_ext_ week if week >= 22 & week <= 38 & ano == 1988 & negro == 0, lcolor(black) lpattern(solid) lwidth(thin) xlabel(22(2)40) xlabel(, nogrid) xline(32, lcolor(red) lpattern(dot) lwidth(thick)) xtitle("Semana do ano") ytitle("Número de óbitos")
+twoway line morte_causa_ext_ week if week >= 22 & week <= 37 & ano == 1988 & negro == 0, lcolor(black) lpattern(solid) lwidth(thin) xlabel(22(2)38) xlabel(, nogrid) xline(32, lcolor(red) lpattern(dot) lwidth(thick)) xtitle("Semana do ano") ytitle("Número de óbitos")
 
 *Gráfico que separa os anos - Com separação de raças
 	* Negros
@@ -527,9 +527,9 @@ twoway (line morte_int_leg_ week_cont if week_cont <= 52 & negro == 0, lwidth(me
 
 	* 10 semanas antes do lançamento - 5 semanas depois - Com separação de raças
 		* Negros
-twoway line morte_int_leg_ week if week >= 22 & week <= 38 & ano == 1988 & negro == 1, lcolor(black) lpattern(solid) lwidth(thin) xlabel(22(2)40) xlabel(, nogrid) xline(32, lcolor(red) lpattern(dot) lwidth(thick)) xtitle("Semana do ano") ytitle("Número de óbitos")
+twoway line morte_int_leg_ week if week >= 22 & week <= 37 & ano == 1988 & negro == 1, lcolor(black) lpattern(solid) lwidth(thin) xlabel(22(2)38) xlabel(, nogrid) xline(32, lcolor(red) lpattern(dot) lwidth(thick)) xtitle("Semana do ano") ytitle("Número de óbitos")
 		* Não Negros
-twoway line morte_int_leg_ week if week >= 22 & week <= 38 & ano == 1988 & negro == 0, lcolor(black) lpattern(solid) lwidth(thin) xlabel(22(2)40) xlabel(, nogrid) xline(32, lcolor(red) lpattern(dot) lwidth(thick)) xtitle("Semana do ano") ytitle("Número de óbitos")
+twoway line morte_int_leg_ week if week >= 22 & week <= 37 & ano == 1988 & negro == 0, lcolor(black) lpattern(solid) lwidth(thin) xlabel(22(2)38) xlabel(, nogrid) xline(32, lcolor(red) lpattern(dot) lwidth(thick)) xtitle("Semana do ano") ytitle("Número de óbitos")
 
 *Gráfico que separa os anos - Com separação de raças
 	* Negros
@@ -566,9 +566,9 @@ twoway (line morte_homi_ week_cont if week_cont <= 52 & negro == 1, lwidth(mediu
 twoway (line morte_homi_ week_cont if week_cont <= 52 & negro == 0, lwidth(medium) lcolor(black)) (line morte_homi_ week_cont if week_cont > 52 & week_cont <= 105 & negro == 0, lwidth(medium) lcolor(red) lpattern(solid)) (line morte_homi_ week_cont if week_cont > 105 & negro == 0, lwidth(medium) lcolor(gray) lpattern(solid)), xtitle("Semanas") ytitle("Número de Óbitos") legend(order(1 "1986" 2 "1987" 3 "1988")) xlabel(, nogrid) xline(53, lcolor(black) lwidth(medium) lpattern(dash)) xline(105, lcolor(black) lwidth(medium) lpattern(dash)) xline(136, lcolor(red) lpattern(dot) lwidth(thick))
 
 	* 10 semanas antes do lançamento - 5 semanas depois - Negros
-twoway line morte_homi_ week if week >= 22 & week <= 38 & ano == 1988 & negro == 1, lcolor(black) lpattern(solid) lwidth(thin) xlabel(22(2)40) xlabel(, nogrid) xline(32, lcolor(red) lpattern(dot) lwidth(thick)) xtitle("Semana do ano") ytitle("Número de óbitos")
+twoway line morte_homi_ week if week >= 22 & week <= 37 & ano == 1988 & negro == 1, lcolor(black) lpattern(solid) lwidth(thin) xlabel(22(2)38) xlabel(, nogrid) xline(32, lcolor(red) lpattern(dot) lwidth(thick)) xtitle("Semana do ano") ytitle("Número de óbitos")
 	* 10 semanas antes do lançamento - 5 semanas depois - Não Negros
-twoway line morte_homi_ week if week >= 22 & week <= 38 & ano == 1988 & negro == 0, lcolor(black) lpattern(solid) lwidth(thin) xlabel(22(2)40) xlabel(, nogrid) xline(32, lcolor(red) lpattern(dot) lwidth(thick)) xtitle("Semana do ano") ytitle("Número de óbitos")
+twoway line morte_homi_ week if week >= 22 & week <= 37 & ano == 1988 & negro == 0, lcolor(black) lpattern(solid) lwidth(thin) xlabel(22(2)38) xlabel(, nogrid) xline(32, lcolor(red) lpattern(dot) lwidth(thick)) xtitle("Semana do ano") ytitle("Número de óbitos")
 
 *Gráfico que separa os anos - Com separação de raças
 	* Negros
@@ -612,27 +612,27 @@ eventdd morte_causa_ext_pc ib1.negro i.week i.ano, timevar(tempoAteLanc2) method
 * Para mortes por Intervenção Legal
 
 
-reghdfe morte_int_leg_pc i.negro##i.post if week >= 22 & week <= 43, absorb(cod_condado week_cont ano) vce(cluster cod_condado)
+reghdfe morte_int_leg_pc i.negro##i.post if week >= 22 & week <= 37, absorb(cod_condado week_cont ano) vce(cluster cod_condado)
 
 estimates store dnd_int_reg
 
 
 * Para mortes por homicídio
 
-reghdfe morte_homi_pc i.negro##i.post if week >= 22 & week <= 43, absorb(cod_condado week_cont ano) vce(cluster cod_condado)
+reghdfe morte_homi_pc i.negro##i.post if week >= 22 & week <= 37, absorb(cod_condado week_cont ano) vce(cluster cod_condado)
 
 estimates store dnd_homi
 
 
 * Para óbitos totais
 
-reghdfe obitos_totais_pc i.negro##i.post if week >= 22 & week <= 43, absorb(cod_condado week_cont ano) vce(cluster cod_condado)
+reghdfe obitos_totais_pc i.negro##i.post if week >= 22 & week <= 37, absorb(cod_condado week_cont ano) vce(cluster cod_condado)
 
 estimates store dnd_obitos_totais
 
 * Para mortes por causas externas
 
-reghdfe morte_causa_ext_pc i.negro##i.post if week >= 22 & week <= 43, absorb(cod_condado week_cont ano) vce(cluster cod_condado)
+reghdfe morte_causa_ext_pc i.negro##i.post if week >= 22 & week <= 37, absorb(cod_condado week_cont ano) vce(cluster cod_condado)
 
 estimates store dnd_causas_ext
 
@@ -683,24 +683,24 @@ eventdd morte_causa_ext_pc ib1.negro i.week i.ano, timevar(tempoAteLanc_single2)
 ** Estimando o Pooled Diff-N-Diff
 
 * Para mortes por Intervenção Legal
-reghdfe morte_int_leg_pc i.negro##i.post_single if week >= 17 & week <= 38, absorb(cod_condado week_cont ano) vce(cluster cod_condado)
+reghdfe morte_int_leg_pc i.negro##i.post_single if week >= 17 & week <= 32, absorb(cod_condado week_cont ano) vce(cluster cod_condado)
 
 estimates store dnd_int_reg_single
 
 
 * Para mortes por Homicídio
-reghdfe morte_homi_pc i.negro##i.post_single if week >= 17 & week <= 38, absorb(cod_condado week_cont ano) vce(cluster cod_condado)
+reghdfe morte_homi_pc i.negro##i.post_single if week >= 17 & week <= 32, absorb(cod_condado week_cont ano) vce(cluster cod_condado)
 
 estimates store dnd_homi_single
 
 
 * Para óbitos totais
-reghdfe obitos_totais_pc i.negro##i.post_single if week >= 17 & week <= 38, absorb(cod_condado week_cont ano) vce(cluster cod_condado)
+reghdfe obitos_totais_pc i.negro##i.post_single if week >= 17 & week <= 32, absorb(cod_condado week_cont ano) vce(cluster cod_condado)
 
 estimates store dnd_obitos_totais_single
 
 * Para mortes por causa externa
-reghdfe morte_causa_ext_pc i.negro##i.post_single if week >= 17 & week <= 38, absorb(cod_condado week_cont ano) vce(cluster cod_condado)
+reghdfe morte_causa_ext_pc i.negro##i.post_single if week >= 17 & week <= 32, absorb(cod_condado week_cont ano) vce(cluster cod_condado)
 
 estimates store dnd_causas_ext_single
 
@@ -746,10 +746,10 @@ collapse (sum) morte_causa_ext_, by(week_cont ano week negro)
 * 10 semanas antes do lançamento - 5 semanas depois - Com separação de raças
 		
 		* Negros
-twoway line morte_causa_ext_ week if week >= 17 & week <= 31 & ano == 1988 & negro == 1, lcolor(black) lpattern(solid) lwidth(thin) xlabel(16(2)32) xlabel(, nogrid) xline(27, lcolor(red) lpattern(dot) lwidth(thick)) xtitle("Semana do ano") ytitle("Número de óbitos")
+twoway line morte_causa_ext_ week if week >= 17 & week <= 32 & ano == 1988 & negro == 1, lcolor(black) lpattern(solid) lwidth(thin) xlabel(16(2)34) xlabel(, nogrid) xline(27, lcolor(red) lpattern(dot) lwidth(thick)) xtitle("Semana do ano") ytitle("Número de óbitos")
 		
 		* Não Negros
-twoway line morte_causa_ext_ week if week >= 17 & week <= 31 & ano == 1988 & negro == 0, lcolor(black) lpattern(solid) lwidth(thin) xlabel(16(2)32) xlabel(, nogrid) xline(27, lcolor(red) lpattern(dot) lwidth(thick)) xtitle("Semana do ano") ytitle("Número de óbitos")
+twoway line morte_causa_ext_ week if week >= 17 & week <= 32 & ano == 1988 & negro == 0, lcolor(black) lpattern(solid) lwidth(thin) xlabel(16(2)34) xlabel(, nogrid) xline(27, lcolor(red) lpattern(dot) lwidth(thick)) xtitle("Semana do ano") ytitle("Número de óbitos")
 
 * Intervenção Legal
 
@@ -760,10 +760,10 @@ collapse (sum) morte_int_leg_, by(week_cont ano week negro)
 * 10 semanas antes do lançamento - 5 semanas depois - Com separação de raças
 		
 		* Negros
-twoway line morte_int_leg_ week if week >= 17 & week <= 31 & ano == 1988 & negro == 1, lcolor(black) lpattern(solid) lwidth(thin) xlabel(16(2)32) xlabel(, nogrid) xline(27, lcolor(red) lpattern(dot) lwidth(thick)) xtitle("Semana do ano") ytitle("Número de óbitos")
+twoway line morte_int_leg_ week if week >= 17 & week <= 32 & ano == 1988 & negro == 1, lcolor(black) lpattern(solid) lwidth(thin) xlabel(16(2)34) xlabel(, nogrid) xline(27, lcolor(red) lpattern(dot) lwidth(thick)) xtitle("Semana do ano") ytitle("Número de óbitos")
 		
 		* Não Negros
-twoway line morte_int_leg_ week if week >= 17 & week <= 31 & ano == 1988 & negro == 0, lcolor(black) lpattern(solid) lwidth(thin) xlabel(16(2)32) xlabel(, nogrid) xline(27, lcolor(red) lpattern(dot) lwidth(thick)) xtitle("Semana do ano") ytitle("Número de óbitos")
+twoway line morte_int_leg_ week if week >= 17 & week <= 32 & ano == 1988 & negro == 0, lcolor(black) lpattern(solid) lwidth(thin) xlabel(16(2)34) xlabel(, nogrid) xline(27, lcolor(red) lpattern(dot) lwidth(thick)) xtitle("Semana do ano") ytitle("Número de óbitos")
 
 * Homicídios
 
@@ -772,10 +772,10 @@ use Base_completa_long.dta, clear
 collapse (sum) morte_homi_, by(week_cont ano week negro)
 
 * 10 semanas antes do lançamento - 5 semanas depois - Negros
-twoway line morte_homi_ week if week >= 17 & week <= 31 & ano == 1988 & negro == 1, lcolor(black) lpattern(solid) lwidth(thin) xlabel(16(2)32) xlabel(, nogrid) xline(27, lcolor(red) lpattern(dot) lwidth(thick)) xtitle("Semana do ano") ytitle("Número de óbitos")
+twoway line morte_homi_ week if week >= 17 & week <= 32 & ano == 1988 & negro == 1, lcolor(black) lpattern(solid) lwidth(thin) xlabel(16(2)34) xlabel(, nogrid) xline(27, lcolor(red) lpattern(dot) lwidth(thick)) xtitle("Semana do ano") ytitle("Número de óbitos")
 	
 * 10 semanas antes do lançamento - 5 semanas depois - Não Negros
-twoway line morte_homi_ week if week >= 17 & week <= 31 & ano == 1988 & negro == 0, lcolor(black) lpattern(solid) lwidth(thin) xlabel(16(2)32) xlabel(, nogrid) xline(27, lcolor(red) lpattern(dot) lwidth(thick)) xtitle("Semana do ano") ytitle("Número de óbitos")
+twoway line morte_homi_ week if week >= 17 & week <= 32 & ano == 1988 & negro == 0, lcolor(black) lpattern(solid) lwidth(thin) xlabel(16(2)34) xlabel(, nogrid) xline(27, lcolor(red) lpattern(dot) lwidth(thick)) xtitle("Semana do ano") ytitle("Número de óbitos")
 
 ** Fazendo o Event Study e o Pooled Diff-in-Diff para o segundo single lançado antes do álbum (Lançado em 10 de julho de 1988)
 
@@ -817,22 +817,22 @@ eventdd morte_causa_ext_pc ib1.negro i.week i.ano, timevar(tempoAteLanc_single2_
 ** Estimando o Pooled Diff-N-Diff
 
 * Para mortes por Intervenção Legal
-reghdfe morte_int_leg_pc i.negro##i.post_single_2 if week >= 26 & week <= 47, absorb(cod_condado week_cont ano) vce(cluster cod_condado)
+reghdfe morte_int_leg_pc i.negro##i.post_single_2 if week >= 26 & week <= 41, absorb(cod_condado week_cont ano) vce(cluster cod_condado)
 
 estimates store dnd_int_reg_single_2
 
 
 * Para mortes por homicídio
-reghdfe morte_homi_pc i.negro##i.post_single_2 if week >= 26 & week <= 47, absorb(cod_condado week_cont ano) vce(cluster cod_condado)
+reghdfe morte_homi_pc i.negro##i.post_single_2 if week >= 26 & week <= 41, absorb(cod_condado week_cont ano) vce(cluster cod_condado)
 
 estimates store dnd_homi_single_2
 
 
 * Para óbitos totais
-reghdfe obitos_totais_pc i.negro##i.post_single_2 if week >= 26 & week <= 47, absorb(cod_condado week_cont ano) vce(cluster cod_condado)
+reghdfe obitos_totais_pc i.negro##i.post_single_2 if week >= 26 & week <= 41, absorb(cod_condado week_cont ano) vce(cluster cod_condado)
 
 * Para causas externas
-reghdfe morte_causa_ext_pc i.negro##i.post_single_2 if week >= 26 & week <= 47, absorb(cod_condado week_cont ano) vce(cluster cod_condado)
+reghdfe morte_causa_ext_pc i.negro##i.post_single_2 if week >= 26 & week <= 41, absorb(cod_condado week_cont ano) vce(cluster cod_condado)
 
 estimates store dnd_causa_ext_single_2
 
@@ -878,10 +878,10 @@ collapse (sum) morte_causa_ext_, by(week_cont ano week negro)
 * 10 semanas antes do lançamento - 5 semanas depois - Com separação de raças
 		
 		* Negros
-twoway line morte_causa_ext_ week if week >= 26 & week <= 42 & ano == 1988 & negro == 1, lcolor(black) lpattern(solid) lwidth(thin) xlabel(24(2)44) xlabel(, nogrid) xline(36, lcolor(red) lpattern(dot) lwidth(thick)) xtitle("Semana do ano") ytitle("Número de óbitos")
+twoway line morte_causa_ext_ week if week >= 26 & week <= 41 & ano == 1988 & negro == 1, lcolor(black) lpattern(solid) lwidth(thin) xlabel(24(2)42) xlabel(, nogrid) xline(36, lcolor(red) lpattern(dot) lwidth(thick)) xtitle("Semana do ano") ytitle("Número de óbitos")
 		
 		* Não Negros
-twoway line morte_causa_ext_ week if week >= 26 & week <= 42 & ano == 1988 & negro == 0, lcolor(black) lpattern(solid) lwidth(thin) xlabel(24(2)44) xlabel(, nogrid) xline(36, lcolor(red) lpattern(dot) lwidth(thick)) xtitle("Semana do ano") ytitle("Número de óbitos")
+twoway line morte_causa_ext_ week if week >= 26 & week <= 41 & ano == 1988 & negro == 0, lcolor(black) lpattern(solid) lwidth(thin) xlabel(24(2)42) xlabel(, nogrid) xline(36, lcolor(red) lpattern(dot) lwidth(thick)) xtitle("Semana do ano") ytitle("Número de óbitos")
 
 * Intervenção Legal
 
@@ -892,10 +892,10 @@ collapse (sum) morte_int_leg_, by(week_cont ano week negro)
 * 10 semanas antes do lançamento - 5 semanas depois - Com separação de raças
 		
 		* Negros
-twoway line morte_int_leg_ week if week >= 26 & week <= 42 & ano == 1988 & negro == 1, lcolor(black) lpattern(solid) lwidth(thin) xlabel(24(2)44) xlabel(, nogrid) xline(36, lcolor(red) lpattern(dot) lwidth(thick)) xtitle("Semana do ano") ytitle("Número de óbitos")
+twoway line morte_int_leg_ week if week >= 26 & week <= 41 & ano == 1988 & negro == 1, lcolor(black) lpattern(solid) lwidth(thin) xlabel(24(2)42) xlabel(, nogrid) xline(36, lcolor(red) lpattern(dot) lwidth(thick)) xtitle("Semana do ano") ytitle("Número de óbitos")
 		
 		* Não Negros
-twoway line morte_int_leg_ week if week >= 26 & week <= 42 & ano == 1988 & negro == 0, lcolor(black) lpattern(solid) lwidth(thin) xlabel(24(2)44) xlabel(, nogrid) xline(36, lcolor(red) lpattern(dot) lwidth(thick)) xtitle("Semana do ano") ytitle("Número de óbitos")
+twoway line morte_int_leg_ week if week >= 26 & week <= 41 & ano == 1988 & negro == 0, lcolor(black) lpattern(solid) lwidth(thin) xlabel(24(2)42) xlabel(, nogrid) xline(36, lcolor(red) lpattern(dot) lwidth(thick)) xtitle("Semana do ano") ytitle("Número de óbitos")
 
 * Homicídios
 
@@ -904,10 +904,10 @@ use Base_completa_long.dta, clear
 collapse (sum) morte_homi_, by(week_cont ano week negro)
 
 * 10 semanas antes do lançamento - 5 semanas depois - Negros
-twoway line morte_homi_ week if week >= 26 & week <= 42 & ano == 1988 & negro == 1, lcolor(black) lpattern(solid) lwidth(thin) xlabel(24(2)44) xlabel(, nogrid) xline(36, lcolor(red) lpattern(dot) lwidth(thick)) xtitle("Semana do ano") ytitle("Número de óbitos")
+twoway line morte_homi_ week if week >= 26 & week <= 41 & ano == 1988 & negro == 1, lcolor(black) lpattern(solid) lwidth(thin) xlabel(24(2)42) xlabel(, nogrid) xline(36, lcolor(red) lpattern(dot) lwidth(thick)) xtitle("Semana do ano") ytitle("Número de óbitos")
 	
 * 10 semanas antes do lançamento - 5 semanas depois - Não Negros
-twoway line morte_homi_ week if week >= 26 & week <= 42 & ano == 1988 & negro == 0, lcolor(black) lpattern(solid) lwidth(thin) xlabel(24(2)44) xlabel(, nogrid) xline(36, lcolor(red) lpattern(dot) lwidth(thick)) xtitle("Semana do ano") ytitle("Número de óbitos")
+twoway line morte_homi_ week if week >= 26 & week <= 41 & ano == 1988 & negro == 0, lcolor(black) lpattern(solid) lwidth(thin) xlabel(24(2)42) xlabel(, nogrid) xline(36, lcolor(red) lpattern(dot) lwidth(thick)) xtitle("Semana do ano") ytitle("Número de óbitos")
 
 ** Fazer um mapa de calor sobre os condados e as proporções de indivíduos negros sobre a população total do condado
 
